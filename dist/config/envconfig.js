@@ -10,7 +10,7 @@ const http_status_codes_1 = require("http-status-codes");
 dotenv_1.default.config({
     path: "./.env"
 });
-const envNames = ["MONGO_URI", "NODE_ENV", "ACCESS_TOKEN_SECRET", "ACCESS_TOKEN_EXPIRY", "REFRESH_TOKEN_SECRET", "REFRESH_TOKEN_EXPIRY", "ADMIN_EMAIL", "ADMIN_PASSWORD"];
+const envNames = ["MONGO_URI", "NODE_ENV", "PORT", "ACCESS_TOKEN_SECRET", "ACCESS_TOKEN_EXPIRY", "REFRESH_TOKEN_SECRET", "REFRESH_TOKEN_EXPIRY", "ADMIN_EMAIL", "ADMIN_PASSWORD"];
 const getEnvs = () => {
     for (const item of envNames) {
         const value = process.env[item];
@@ -21,6 +21,7 @@ const getEnvs = () => {
     return {
         MONGO_URI: process.env.MONGO_URI,
         NODE_ENV: process.env.NODE_ENV,
+        PORT: process.env.PORT,
         ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET,
         ACCESS_TOKEN_EXPIRY: process.env.ACCESS_TOKEN_EXPIRY,
         REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,

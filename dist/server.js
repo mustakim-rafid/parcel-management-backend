@@ -16,7 +16,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const app_1 = require("./app");
 const envconfig_1 = require("./config/envconfig");
 const seedAdmin_1 = require("./utils/seedAdmin");
-const port = 5000;
+const port = (0, envconfig_1.getEnvs)().PORT || 5000;
 const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield mongoose_1.default.connect(`${(0, envconfig_1.getEnvs)().MONGO_URI}/parcel-management-db`);

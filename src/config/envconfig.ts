@@ -9,6 +9,7 @@ dotenv.config({
 interface IEnv {
     MONGO_URI: string;
     NODE_ENV: "production" | "development";
+    PORT: string;
     ACCESS_TOKEN_SECRET: string;
     ACCESS_TOKEN_EXPIRY: string;
     REFRESH_TOKEN_SECRET: string;
@@ -16,7 +17,7 @@ interface IEnv {
     ADMIN_EMAIL: string;
     ADMIN_PASSWORD: string;
 }
-const envNames = ["MONGO_URI", "NODE_ENV", "ACCESS_TOKEN_SECRET", "ACCESS_TOKEN_EXPIRY", "REFRESH_TOKEN_SECRET", "REFRESH_TOKEN_EXPIRY", "ADMIN_EMAIL", "ADMIN_PASSWORD"];
+const envNames = ["MONGO_URI", "NODE_ENV", "PORT", "ACCESS_TOKEN_SECRET", "ACCESS_TOKEN_EXPIRY", "REFRESH_TOKEN_SECRET", "REFRESH_TOKEN_EXPIRY", "ADMIN_EMAIL", "ADMIN_PASSWORD"];
 
 export const getEnvs = (): IEnv => {
     for (const item of envNames) {
@@ -29,6 +30,7 @@ export const getEnvs = (): IEnv => {
     return {
         MONGO_URI: process.env.MONGO_URI as string,
         NODE_ENV: process.env.NODE_ENV as "production" | "development",
+        PORT: process.env.PORT as string,
         ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET as string,
         ACCESS_TOKEN_EXPIRY: process.env.ACCESS_TOKEN_EXPIRY as string,
         REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET as string,

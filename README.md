@@ -90,6 +90,9 @@ MONGO_URI=your-mongodb-url
 # Environment
 NODE_ENV=development
 
+# Port
+PORT=your-port
+
 # JWT
 ACCESS_TOKEN_SECRET=your-secret
 ACCESS_TOKEN_EXPIRY=your-expiry

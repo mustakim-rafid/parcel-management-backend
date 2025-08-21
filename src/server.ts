@@ -3,7 +3,7 @@ import { app } from "./app";
 import { getEnvs } from "./config/envconfig";
 import { createAdmin } from "./utils/seedAdmin";
 
-const port = 5000
+const port = getEnvs().PORT || 5000
 
 const startServer = async () => {
     try {
