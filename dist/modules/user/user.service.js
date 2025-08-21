@@ -49,6 +49,11 @@ const updateUser = (id, payload, userInfo) => __awaiter(void 0, void 0, void 0, 
     if (!user) {
         throw new AppError_1.AppError(http_status_codes_1.StatusCodes.NOT_FOUND, "User not found");
     }
+    if (payload.isVerified || payload.isBlocked) {
+        if (userInfo.role !== user_interface_1.Role.ADMIN) {
+            throw new AppError_1.AppError(http_status_codes_1.StatusCodes.NOT_FOUND, "You cann't change verify and block field");
+        }
+    }
     if (payload.role) {
         if (userInfo.role === user_interface_1.Role.RECEIVER || userInfo.role === user_interface_1.Role.SENDER) {
             throw new AppError_1.AppError(http_status_codes_1.StatusCodes.FORBIDDEN, "Sorry you can't update role field");

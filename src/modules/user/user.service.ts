@@ -33,7 +33,11 @@ const updateUser = async (id: string, payload: Partial<IUser>, userInfo: JwtPayl
     if (!user) {
         throw new AppError(StatusCodes.NOT_FOUND, "User not found")
     }
-
+    if (payload.isVerified || payload.isBlocked) {
+        if (userInfo.role !== Role.ADMIN) {
+            throw new AppError(StatusCodes.NOT_FOUND, "You cann't change verify and block field")
+        }
+    }
     if (payload.role) {
         if (userInfo.role === Role.RECEIVER || userInfo.role === Role.SENDER) {
             throw new AppError(StatusCodes.FORBIDDEN, "Sorry you can't update role field")
