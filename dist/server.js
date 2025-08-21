@@ -21,6 +21,7 @@ const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield mongoose_1.default.connect(`${(0, envconfig_1.getEnvs)().MONGO_URI}/parcel-management-db`);
         console.log("Database connected successfully");
+        yield (0, seedAdmin_1.createAdmin)();
         app_1.app.listen(port, () => {
             console.log(`Example app running at port ${port}`);
         });
@@ -30,7 +31,4 @@ const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
         process.exit(1);
     }
 });
-(() => __awaiter(void 0, void 0, void 0, function* () {
-    yield startServer();
-    yield (0, seedAdmin_1.createAdmin)();
-}))();
+startServer();

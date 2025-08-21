@@ -9,6 +9,7 @@ const startServer = async () => {
     try {
         await mongoose.connect(`${getEnvs().MONGO_URI}/parcel-management-db`)
         console.log("Database connected successfully")
+        await createAdmin()
         app.listen(port, () => {
             console.log(`Example app running at port ${port}`)
         })
@@ -18,10 +19,7 @@ const startServer = async () => {
     }
 }
 
-(async () => {
-    await startServer()
-    await createAdmin()
-})()
+startServer()
 
 
 
