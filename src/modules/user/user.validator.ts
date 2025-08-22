@@ -35,6 +35,10 @@ export const userUpdateZodSchema = z.object({
     phone: z.string().regex(/^\+880\d{10}$/, "Phone number must be Bangladeshi valid number").optional(),
 
     role: z.enum([Role.ADMIN, Role.RECEIVER, Role.SENDER], {message: "Not a valid role"}).optional(),
+
+    isVerified: z.boolean().optional(),
+
+    isBlocked: z.boolean().optional(),
     
     address: userAddressZodSchema.optional()
 })
