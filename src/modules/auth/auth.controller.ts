@@ -26,12 +26,12 @@ const refreshAccessToken = asyncHandler(async (req: Request, res: Response) => {
 const logout = asyncHandler(async (req: Request, res: Response) => {
     res.clearCookie("accessToken", {
         httpOnly: true,
-        secure: getEnvs().NODE_ENV === "production",
+        secure: true,
         sameSite: "none"
     })
     res.clearCookie("refreshToken", {
         httpOnly: true,
-        secure: getEnvs().NODE_ENV === "production",
+        secure: true,
         sameSite: "none"
     })
     ApiResponse(res, StatusCodes.OK, "User logged out successfully", {})

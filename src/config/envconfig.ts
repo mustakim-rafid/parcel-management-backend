@@ -10,6 +10,7 @@ interface IEnv {
     MONGO_URI: string;
     NODE_ENV: "production" | "development";
     PORT: string;
+    FRONTEND_URL: string;
     ACCESS_TOKEN_SECRET: string;
     ACCESS_TOKEN_EXPIRY: string;
     REFRESH_TOKEN_SECRET: string;
@@ -31,6 +32,7 @@ export const getEnvs = (): IEnv => {
         MONGO_URI: process.env.MONGO_URI as string,
         NODE_ENV: process.env.NODE_ENV as "production" | "development",
         PORT: process.env.PORT as string,
+        FRONTEND_URL: process.env.FRONTEND_URL as string,
         ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET as string,
         ACCESS_TOKEN_EXPIRY: process.env.ACCESS_TOKEN_EXPIRY as string,
         REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET as string,

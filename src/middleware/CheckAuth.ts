@@ -8,7 +8,7 @@ import { User } from "../modules/user/user.model";
 
 export const checkAuth = (roles: Role[]) => async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const token = req.headers.authorization
+        const token = req.headers.authorization || req.cookies.accessToken
     
         if (!token) {
             throw new AppError(StatusCodes.NOT_FOUND, "Access Token missing.")

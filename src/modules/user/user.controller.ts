@@ -9,6 +9,11 @@ const register = asyncHandler(async (req: Request, res: Response) => {
     ApiResponse(res, StatusCodes.CREATED, "User registered successfully!", user)
 })
 
+const getUser = asyncHandler(async (req: Request, res: Response) => {
+    const user = await userServices.getUser(req.user)
+    ApiResponse(res, StatusCodes.CREATED, "User retrieved successfully!", user)
+})
+
 const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
     const users = await userServices.getAllUsers()
     ApiResponse(res, StatusCodes.OK, "Users retrieved successfully", users)
@@ -21,6 +26,7 @@ const updateUser = asyncHandler(async (req: Request, res: Response) => {
 
 export const userControllers = {
     register,
+    getUser,
     getAllUsers,
     updateUser
 }

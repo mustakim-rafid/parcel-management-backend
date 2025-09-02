@@ -18,7 +18,7 @@ export const userCreateZodSchema = z.object({
 
     password: z.string({message: "Password is required"}).min(6, "Password length must be at least 6").regex(/(?=.*[A-Z])/, "Password must have at least one uppercase letter").regex(/(?=.*\d)/, "Password must have at least one digit").regex(/(?=.*[!@#$%^&*(),.?":{}|<>])/, "Password must have at least one special character"),
 
-    phone: z.string({message: "Phone is required"}).regex(/^\+880\d{10}$/, "Phone number must be Bangladeshi valid number"),
+    phone: z.string({message: "Phone is required"}).length(11, "Phone number must be Bangladeshi valid number"),
 
     role: z.enum([Role.RECEIVER, Role.SENDER], {message: "Not a valid role"}),
     

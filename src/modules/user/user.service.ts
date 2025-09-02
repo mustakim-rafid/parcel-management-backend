@@ -11,13 +11,22 @@ const register = async (payload: Partial<IUser>) => {
     })
 
     if (isUserExists) {
-        throw new AppError(StatusCodes.FORBIDDEN, "User already exists")
+        throw new AppError(StatusCodes.FORBIDDEN, "User already exists with this email")
     }
 
     const newUser = await User.create(payload)
 
     const {password, isVerified, isBlocked, ...data} = newUser.toObject()
 
+    return data
+}
+
+const getUser = async (userInfo: JwtPayload) => {
+    const user = await User.findById(userInfo.id)
+    if (!user) {
+        throw new AppError(StatusCodes.NOT_FOUND, "User not found")
+    }
+    const {password, isVerified, isBlocked, ...data} = user.toObject()
     return data
 }
 
@@ -65,6 +74,7 @@ const updateUser = async (id: string, payload: Partial<IUser>, userInfo: JwtPayl
 
 export const userServices = {
     register,
+    getUser,
     getAllUsers,
     updateUser
 }
