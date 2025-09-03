@@ -5,6 +5,7 @@ import { User } from "../user/user.model"
 import { Role } from "../user/user.interface"
 import { AppError } from "../../utils/AppError"
 import { StatusCodes } from "http-status-codes"
+import { Types } from "mongoose"
 
 const createParcel = async (payload: Partial<IParcel>) => {
     const isReceiverAvailable = await User.findById(payload.receiver)
@@ -33,11 +34,43 @@ const getAllParcel = async (filter: string, value: any, limit: number, skip: num
 }
 
 const getSenderParcels = async (user: JwtPayload) => {
-    const senderParcels = await Parcel.find({
-        sender: user.id
-    })
-
-    if (!getSenderParcels) {
+    const senderParcels = await Parcel.aggregate([
+        {
+            $match: {
+                sender: new Types.ObjectId(user.id as string)
+            }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'receiver',
+                foreignField: '_id',
+                as: 'receiverEmail'
+            }
+        },
+        {
+            $unwind: '$receiverEmail'
+        },
+        {
+            $project: {
+                type: 1,
+                weight: 1,
+                fee: 1,
+                deliveryDate: 1,
+                isCanceled: 1,
+                address: 1,
+                status: 1,
+                'receiverEmail.email': 1
+            }
+        },
+        {
+            $sort: {
+                createdAt: -1
+            }
+        }
+    ])
+    
+    if (!senderParcels) {
         throw new AppError(StatusCodes.NOT_FOUND, "No parcel found")
     }
 
@@ -47,6 +80,8 @@ const getSenderParcels = async (user: JwtPayload) => {
 const getReceiverParcels = async (user: JwtPayload) => {
     const receiverParcels = await Parcel.find({
         receiver: user.id
+    }).sort({
+        createdAt: -1
     })
 
     if (!getSenderParcels) {

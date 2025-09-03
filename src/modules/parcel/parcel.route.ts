@@ -7,7 +7,7 @@ import { parcelControllers } from "./parcel.controller";
 
 const router = Router()
 
-router.route("/").post(validation(parcelCreateZodSchema), checkAuth([Role.ADMIN, Role.SENDER]), parcelControllers.createParcel)
+router.route("/").post(validation(parcelCreateZodSchema), checkAuth([Role.SENDER]), parcelControllers.createParcel)
 router.route("/").get(checkAuth([Role.ADMIN]), parcelControllers.getAllParcel)
 router.route("/sender-parcels").get(checkAuth([Role.SENDER]), parcelControllers.getSenderParcels)
 router.route("/receiver-parcels").get(checkAuth([Role.RECEIVER]), parcelControllers.getReceiverParcels)

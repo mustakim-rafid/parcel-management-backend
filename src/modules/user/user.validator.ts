@@ -42,3 +42,7 @@ export const userUpdateZodSchema = z.object({
     
     address: userAddressZodSchema.optional()
 })
+
+export const getReceiverZodSchema = z.object({
+    email: z.string({invalid_type_error: "Email must be a string"}).email("Invalid email").min(3, "Email too short"),
+})

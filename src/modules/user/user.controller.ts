@@ -11,7 +11,7 @@ const register = asyncHandler(async (req: Request, res: Response) => {
 
 const getUser = asyncHandler(async (req: Request, res: Response) => {
     const user = await userServices.getUser(req.user)
-    ApiResponse(res, StatusCodes.CREATED, "User retrieved successfully!", user)
+    ApiResponse(res, StatusCodes.OK, "User retrieved successfully!", user)
 })
 
 const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
@@ -24,9 +24,16 @@ const updateUser = asyncHandler(async (req: Request, res: Response) => {
     ApiResponse(res, StatusCodes.OK, "User updated successfully", newUpdatedUser)
 })
 
+const getReceiverByEmail = asyncHandler(async (req: Request, res: Response) => {
+    const email = req.query.email
+    const receiver = await userServices.getReceiverByEmail(email as string)
+    ApiResponse(res, StatusCodes.OK, "Receiver retrieved successfully!", receiver)
+})
+
 export const userControllers = {
     register,
     getUser,
     getAllUsers,
-    updateUser
+    updateUser,
+    getReceiverByEmail
 }

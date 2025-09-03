@@ -30,6 +30,20 @@ const getUser = async (userInfo: JwtPayload) => {
     return data
 }
 
+const getReceiverByEmail = async (email: string) => {
+    const receiver = await User.findOne({
+        email,
+        role: Role.RECEIVER
+    })
+    
+    if (!receiver) {
+        throw new AppError(StatusCodes.NOT_FOUND, "No receiver found")
+    }
+
+    const {password, isVerified, isBlocked, ...data} = receiver.toObject()
+    return data
+}
+
 const getAllUsers = async () => {
     const users = await User.find({})
 
@@ -76,5 +90,6 @@ export const userServices = {
     register,
     getUser,
     getAllUsers,
-    updateUser
+    updateUser,
+    getReceiverByEmail
 }

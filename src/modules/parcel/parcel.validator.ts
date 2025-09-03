@@ -4,7 +4,7 @@ import { Status } from "./parcel.interface";
 export const parcelCreateZodSchema = z.object({
     type: z.string(),
     weight: z.string(),
-    fee: z.number(),
+    fee: z.string().transform(val => Number(val)),
     status: z.nativeEnum(Status, {message: "Invalid status"}).optional(),
     deliveryDate: z.string().transform(val => new Date(val)),
     sender: z.string().length(24, {message: "Sender's id must be a 24 characters string"}),
