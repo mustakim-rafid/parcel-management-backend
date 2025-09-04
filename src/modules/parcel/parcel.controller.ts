@@ -3,6 +3,7 @@ import { asyncHandler } from "../../utils/catchAsync";
 import { parcelServices } from "./parcel.service";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { StatusCodes } from "http-status-codes";
+import { Status } from "./parcel.interface";
 
 const createParcel = asyncHandler(async (req: Request, res: Response) => {
     const parcel = await parcelServices.createParcel(req.body)
@@ -21,7 +22,7 @@ const getSenderParcels = asyncHandler(async (req: Request, res: Response) => {
 })
 
 const getReceiverParcels = asyncHandler(async (req: Request, res: Response) => {
-    const parcels = await parcelServices.getReceiverParcels(req.user)
+    const parcels = await parcelServices.getReceiverParcels(req.user, req.query.requested === 'true')
     ApiResponse(res, StatusCodes.OK, "Parcels retrieved successfully", parcels)
 })
 

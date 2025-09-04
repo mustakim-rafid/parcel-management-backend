@@ -52,6 +52,11 @@ const getSenderParcels = async (user: JwtPayload) => {
             $unwind: '$receiverEmail'
         },
         {
+            $sort: {
+                createdAt: -1
+            }
+        },
+        {
             $project: {
                 type: 1,
                 weight: 1,
@@ -61,11 +66,6 @@ const getSenderParcels = async (user: JwtPayload) => {
                 address: 1,
                 status: 1,
                 'receiverEmail.email': 1
-            }
-        },
-        {
-            $sort: {
-                createdAt: -1
             }
         }
     ])
@@ -77,12 +77,45 @@ const getSenderParcels = async (user: JwtPayload) => {
     return senderParcels
 }
 
-const getReceiverParcels = async (user: JwtPayload) => {
-    const receiverParcels = await Parcel.find({
-        receiver: user.id
-    }).sort({
-        createdAt: -1
-    })
+const getReceiverParcels = async (user: JwtPayload, requested: boolean) => {
+    const receiverParcels = await Parcel.aggregate([
+        {
+            $match: {
+                receiver: new Types.ObjectId(user.id as string)
+            }
+        },
+        {
+            $match: requested ? { status: Status.REQUESTED } : { status: { $ne: Status.REQUESTED } }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'sender',
+                foreignField: '_id',
+                as: 'senderEmail'
+            }
+        },
+        {
+            $unwind: '$senderEmail'
+        },
+        {
+            $sort: {
+                createdAt: -1
+            }
+        },
+        {
+            $project: {
+                type: 1,
+                weight: 1,
+                fee: 1,
+                deliveryDate: 1,
+                isCanceled: 1,
+                address: 1,
+                status: 1,
+                'senderEmail.email': 1
+            }
+        }
+    ])
 
     if (!getSenderParcels) {
         throw new AppError(StatusCodes.NOT_FOUND, "No parcel found")
