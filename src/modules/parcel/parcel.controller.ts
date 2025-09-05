@@ -17,12 +17,12 @@ const getAllParcel = asyncHandler(async (req: Request, res: Response) => {
 })
 
 const getSenderParcels = asyncHandler(async (req: Request, res: Response) => {
-    const parcels = await parcelServices.getSenderParcels(req.user)
+    const parcels = await parcelServices.getSenderParcels(req.user, req.query.isCancelableParcels === "true")
     ApiResponse(res, StatusCodes.OK, "Parcels retrieved successfully", parcels)
 })
 
 const getReceiverParcels = asyncHandler(async (req: Request, res: Response) => {
-    const parcels = await parcelServices.getReceiverParcels(req.user, req.query.requested === 'true')
+    const parcels = await parcelServices.getReceiverParcels(req.user, req.query.requested === 'true', req.query.allParcels === 'true')
     ApiResponse(res, StatusCodes.OK, "Parcels retrieved successfully", parcels)
 })
 
@@ -53,7 +53,7 @@ const getPresentParcelStatusDetails = asyncHandler(async (req: Request, res: Res
 
 const cancelParcel = asyncHandler(async (req: Request, res: Response) => {
     const updatedParcel = await parcelServices.cancelParcel(req.params.id, req.user)
-    ApiResponse(res, StatusCodes.OK, "Parcel canceled successfully", updateParcel)
+    ApiResponse(res, StatusCodes.OK, "Parcel canceled successfully", updatedParcel)
 })
 
 export const parcelControllers = {

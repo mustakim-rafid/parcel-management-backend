@@ -22,19 +22,96 @@ const createParcel = async (payload: Partial<IParcel>) => {
     return parcel
 }
 
-const getAllParcel = async (filter: string, value: any, limit: number, skip: number) => {
-    if (["deliveryDate", "createdAt", "updatedAt"].includes(filter)) {
-        value = new Date(value)
+const getAllParcel = async (filter?: string, value?: any, limit?: number, skip?: number) => {
+    if (filter) {
+        if (["deliveryDate", "createdAt", "updatedAt"].includes(filter)) {
+            value = new Date(value)
+        }   
     }
-    const parcels = await Parcel.find({ [filter]: value }).sort({ createdAt: -1 }).limit(limit).skip(skip)
+
+    const parcels = await Parcel.aggregate([
+        ...(
+            filter && value ? [{ 
+                $match: {
+                    [filter]: value
+                }
+            }] : []
+        ),
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'receiver',
+                foreignField: '_id',
+                as: 'receiverEmail'
+            }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'sender',
+                foreignField: '_id',
+                as: 'senderEmail'
+            }
+        },
+        {
+            $unwind: '$receiverEmail'
+        },
+        {
+            $unwind: '$senderEmail'
+        },
+        {
+            $sort: {
+                createdAt: -1
+            }
+        },
+        {
+            $project: {
+                type: 1,
+                weight: 1,
+                fee: 1,
+                deliveryDate: 1,
+                isCanceled: 1,
+                address: 1,
+                status: 1,
+                'receiverEmail.email': 1,
+                'senderEmail.email': 1,
+            }
+        },
+        ...(
+            limit ? [
+                {
+                    $limit: limit
+                },
+            ] : []
+        ),
+        ...(
+            skip ? [
+                {
+                    $skip: skip
+                }
+            ] : []
+        )
+    ])
+
     if (parcels.length === 0) {
         throw new AppError(StatusCodes.NOT_FOUND, "No parcels found")
     }
     return parcels
 }
 
-const getSenderParcels = async (user: JwtPayload) => {
+const getSenderParcels = async (user: JwtPayload, cancelableParcels?: boolean) => {
+
     const senderParcels = await Parcel.aggregate([
+        ...(
+            cancelableParcels ? [{ 
+                $match: { 
+                    status: {
+                        $in: [Status.REQUESTED, Status.APPROVED],
+                    },
+                    isCanceled: false
+                } 
+            }] : []
+        ),
         {
             $match: {
                 sender: new Types.ObjectId(user.id as string)
@@ -77,16 +154,20 @@ const getSenderParcels = async (user: JwtPayload) => {
     return senderParcels
 }
 
-const getReceiverParcels = async (user: JwtPayload, requested: boolean) => {
+const getReceiverParcels = async (user: JwtPayload, requested: boolean, allParcels?: boolean) => {
     const receiverParcels = await Parcel.aggregate([
         {
             $match: {
                 receiver: new Types.ObjectId(user.id as string)
             }
         },
-        {
-            $match: requested ? { status: Status.REQUESTED } : { status: { $ne: Status.REQUESTED } }
-        },
+        ...(
+            !allParcels ? [
+                {
+                  $match: requested ? { status: Status.REQUESTED } : { status: { $ne: Status.REQUESTED } }
+                },
+            ] : []
+        ),
         {
             $lookup: {
                 from: 'users',
@@ -112,7 +193,10 @@ const getReceiverParcels = async (user: JwtPayload, requested: boolean) => {
                 isCanceled: 1,
                 address: 1,
                 status: 1,
-                'senderEmail.email': 1
+                'senderEmail.email': 1,
+                ...(allParcels ? {
+                    presentStatus: { $arrayElemAt: ["$trackingEvents", -1] },
+                } : {})
             }
         }
     ])
