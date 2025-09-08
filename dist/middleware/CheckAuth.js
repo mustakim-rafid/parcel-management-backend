@@ -20,7 +20,7 @@ const envconfig_1 = require("../config/envconfig");
 const user_model_1 = require("../modules/user/user.model");
 const checkAuth = (roles) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const token = req.headers.authorization;
+        const token = req.headers.authorization || req.cookies.accessToken;
         if (!token) {
             throw new AppError_1.AppError(http_status_codes_1.StatusCodes.NOT_FOUND, "Access Token missing.");
         }

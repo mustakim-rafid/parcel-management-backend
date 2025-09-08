@@ -9,7 +9,7 @@ const parcel_interface_1 = require("./parcel.interface");
 exports.parcelCreateZodSchema = zod_1.default.object({
     type: zod_1.default.string(),
     weight: zod_1.default.string(),
-    fee: zod_1.default.number(),
+    fee: zod_1.default.string().transform(val => Number(val)),
     status: zod_1.default.nativeEnum(parcel_interface_1.Status, { message: "Invalid status" }).optional(),
     deliveryDate: zod_1.default.string().transform(val => new Date(val)),
     sender: zod_1.default.string().length(24, { message: "Sender's id must be a 24 characters string" }),

@@ -34,14 +34,33 @@ const register = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         email: payload.email
     });
     if (isUserExists) {
-        throw new AppError_1.AppError(http_status_codes_1.StatusCodes.FORBIDDEN, "User already exists");
+        throw new AppError_1.AppError(http_status_codes_1.StatusCodes.FORBIDDEN, "User already exists with this email");
     }
     const newUser = yield user_model_1.User.create(payload);
     const _a = newUser.toObject(), { password, isVerified, isBlocked } = _a, data = __rest(_a, ["password", "isVerified", "isBlocked"]);
     return data;
 });
+const getUser = (userInfo) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield user_model_1.User.findById(userInfo.id);
+    if (!user) {
+        throw new AppError_1.AppError(http_status_codes_1.StatusCodes.NOT_FOUND, "User not found");
+    }
+    const _a = user.toObject(), { password, isVerified, isBlocked } = _a, data = __rest(_a, ["password", "isVerified", "isBlocked"]);
+    return data;
+});
+const getReceiverByEmail = (email) => __awaiter(void 0, void 0, void 0, function* () {
+    const receiver = yield user_model_1.User.findOne({
+        email,
+        role: user_interface_1.Role.RECEIVER
+    });
+    if (!receiver) {
+        throw new AppError_1.AppError(http_status_codes_1.StatusCodes.NOT_FOUND, "No receiver found");
+    }
+    const _a = receiver.toObject(), { password, isVerified, isBlocked } = _a, data = __rest(_a, ["password", "isVerified", "isBlocked"]);
+    return data;
+});
 const getAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
-    const users = yield user_model_1.User.find({});
+    const users = yield user_model_1.User.find({}, { password: 0 });
     return users;
 });
 const updateUser = (id, payload, userInfo) => __awaiter(void 0, void 0, void 0, function* () {
@@ -76,6 +95,8 @@ const updateUser = (id, payload, userInfo) => __awaiter(void 0, void 0, void 0, 
 });
 exports.userServices = {
     register,
+    getUser,
     getAllUsers,
-    updateUser
+    updateUser,
+    getReceiverByEmail
 };

@@ -9,7 +9,7 @@ const CheckAuth_1 = require("../../middleware/CheckAuth");
 const user_interface_1 = require("../user/user.interface");
 const router = (0, express_1.Router)();
 router.route("/login").post((0, Validation_1.validation)(auth_validator_1.userLoginZodSchema), auth_controller_1.authControllers.login);
-router.route("/logout").get(auth_controller_1.authControllers.logout);
+router.route("/logout").post(auth_controller_1.authControllers.logout);
 router.route("/refresh-token").post(auth_controller_1.authControllers.refreshAccessToken);
 router.route("/reset-password").post((0, Validation_1.validation)(auth_validator_1.resetPasswordZodSchema), (0, CheckAuth_1.checkAuth)([user_interface_1.Role.ADMIN, user_interface_1.Role.RECEIVER, user_interface_1.Role.SENDER]), auth_controller_1.authControllers.resetPassword);
 exports.authRouter = router;

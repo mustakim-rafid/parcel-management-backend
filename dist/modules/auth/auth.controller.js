@@ -34,12 +34,12 @@ const refreshAccessToken = (0, catchAsync_1.asyncHandler)((req, res) => __awaite
 const logout = (0, catchAsync_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.clearCookie("accessToken", {
         httpOnly: true,
-        secure: (0, envconfig_1.getEnvs)().NODE_ENV === "production",
+        secure: true,
         sameSite: "none"
     });
     res.clearCookie("refreshToken", {
         httpOnly: true,
-        secure: (0, envconfig_1.getEnvs)().NODE_ENV === "production",
+        secure: true,
         sameSite: "none"
     });
     (0, ApiResponse_1.ApiResponse)(res, http_status_codes_1.StatusCodes.OK, "User logged out successfully", {});

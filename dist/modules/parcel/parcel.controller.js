@@ -24,11 +24,11 @@ const getAllParcel = (0, catchAsync_1.asyncHandler)((req, res) => __awaiter(void
     (0, ApiResponse_1.ApiResponse)(res, http_status_codes_1.StatusCodes.OK, "All parcel retrieved successfully", parcels);
 }));
 const getSenderParcels = (0, catchAsync_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const parcels = yield parcel_service_1.parcelServices.getSenderParcels(req.user);
+    const parcels = yield parcel_service_1.parcelServices.getSenderParcels(req.user, req.query.isCancelableParcels === "true");
     (0, ApiResponse_1.ApiResponse)(res, http_status_codes_1.StatusCodes.OK, "Parcels retrieved successfully", parcels);
 }));
 const getReceiverParcels = (0, catchAsync_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const parcels = yield parcel_service_1.parcelServices.getReceiverParcels(req.user);
+    const parcels = yield parcel_service_1.parcelServices.getReceiverParcels(req.user, req.query.requested === 'true', req.query.allParcels === 'true');
     (0, ApiResponse_1.ApiResponse)(res, http_status_codes_1.StatusCodes.OK, "Parcels retrieved successfully", parcels);
 }));
 const getParcel = (0, catchAsync_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -53,7 +53,7 @@ const getPresentParcelStatusDetails = (0, catchAsync_1.asyncHandler)((req, res) 
 }));
 const cancelParcel = (0, catchAsync_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const updatedParcel = yield parcel_service_1.parcelServices.cancelParcel(req.params.id, req.user);
-    (0, ApiResponse_1.ApiResponse)(res, http_status_codes_1.StatusCodes.OK, "Parcel canceled successfully", updateParcel);
+    (0, ApiResponse_1.ApiResponse)(res, http_status_codes_1.StatusCodes.OK, "Parcel canceled successfully", updatedParcel);
 }));
 exports.parcelControllers = {
     createParcel,

@@ -16,6 +16,7 @@ const user_model_1 = require("../user/user.model");
 const user_interface_1 = require("../user/user.interface");
 const AppError_1 = require("../../utils/AppError");
 const http_status_codes_1 = require("http-status-codes");
+const mongoose_1 = require("mongoose");
 const createParcel = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const isReceiverAvailable = yield user_model_1.User.findById(payload.receiver);
     const isSenderAvailable = yield user_model_1.User.findById(payload.sender);
@@ -29,28 +30,156 @@ const createParcel = (payload) => __awaiter(void 0, void 0, void 0, function* ()
     return parcel;
 });
 const getAllParcel = (filter, value, limit, skip) => __awaiter(void 0, void 0, void 0, function* () {
-    if (["deliveryDate", "createdAt", "updatedAt"].includes(filter)) {
-        value = new Date(value);
+    if (filter) {
+        if (["deliveryDate", "createdAt", "updatedAt"].includes(filter)) {
+            value = new Date(value);
+        }
     }
-    const parcels = yield parcel_model_1.Parcel.find({ [filter]: value }).sort({ createdAt: -1 }).limit(limit).skip(skip);
+    const parcels = yield parcel_model_1.Parcel.aggregate([
+        ...(filter && value ? [{
+                $match: {
+                    [filter]: value
+                }
+            }] : []),
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'receiver',
+                foreignField: '_id',
+                as: 'receiverEmail'
+            }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'sender',
+                foreignField: '_id',
+                as: 'senderEmail'
+            }
+        },
+        {
+            $unwind: '$receiverEmail'
+        },
+        {
+            $unwind: '$senderEmail'
+        },
+        {
+            $sort: {
+                createdAt: -1
+            }
+        },
+        {
+            $project: {
+                type: 1,
+                weight: 1,
+                fee: 1,
+                deliveryDate: 1,
+                isCanceled: 1,
+                address: 1,
+                status: 1,
+                'receiverEmail.email': 1,
+                'senderEmail.email': 1,
+            }
+        },
+        ...(limit ? [
+            {
+                $limit: limit
+            },
+        ] : []),
+        ...(skip ? [
+            {
+                $skip: skip
+            }
+        ] : [])
+    ]);
     if (parcels.length === 0) {
         throw new AppError_1.AppError(http_status_codes_1.StatusCodes.NOT_FOUND, "No parcels found");
     }
     return parcels;
 });
-const getSenderParcels = (user) => __awaiter(void 0, void 0, void 0, function* () {
-    const senderParcels = yield parcel_model_1.Parcel.find({
-        sender: user.id
-    });
-    if (!getSenderParcels) {
+const getSenderParcels = (user, cancelableParcels) => __awaiter(void 0, void 0, void 0, function* () {
+    const senderParcels = yield parcel_model_1.Parcel.aggregate([
+        ...(cancelableParcels ? [{
+                $match: {
+                    status: {
+                        $in: [parcel_interface_1.Status.REQUESTED, parcel_interface_1.Status.APPROVED],
+                    },
+                    isCanceled: false
+                }
+            }] : []),
+        {
+            $match: {
+                sender: new mongoose_1.Types.ObjectId(user.id)
+            }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'receiver',
+                foreignField: '_id',
+                as: 'receiverEmail'
+            }
+        },
+        {
+            $unwind: '$receiverEmail'
+        },
+        {
+            $sort: {
+                createdAt: -1
+            }
+        },
+        {
+            $project: {
+                type: 1,
+                weight: 1,
+                fee: 1,
+                deliveryDate: 1,
+                isCanceled: 1,
+                address: 1,
+                status: 1,
+                'receiverEmail.email': 1
+            }
+        }
+    ]);
+    if (!senderParcels) {
         throw new AppError_1.AppError(http_status_codes_1.StatusCodes.NOT_FOUND, "No parcel found");
     }
     return senderParcels;
 });
-const getReceiverParcels = (user) => __awaiter(void 0, void 0, void 0, function* () {
-    const receiverParcels = yield parcel_model_1.Parcel.find({
-        receiver: user.id
-    });
+const getReceiverParcels = (user, requested, allParcels) => __awaiter(void 0, void 0, void 0, function* () {
+    const receiverParcels = yield parcel_model_1.Parcel.aggregate([
+        {
+            $match: {
+                receiver: new mongoose_1.Types.ObjectId(user.id)
+            }
+        },
+        ...(!allParcels ? [
+            {
+                $match: requested ? { status: parcel_interface_1.Status.REQUESTED } : { status: { $ne: parcel_interface_1.Status.REQUESTED } }
+            },
+        ] : []),
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'sender',
+                foreignField: '_id',
+                as: 'senderEmail'
+            }
+        },
+        {
+            $unwind: '$senderEmail'
+        },
+        {
+            $sort: {
+                createdAt: -1
+            }
+        },
+        {
+            $project: Object.assign({ type: 1, weight: 1, fee: 1, deliveryDate: 1, isCanceled: 1, address: 1, status: 1, 'senderEmail.email': 1 }, (allParcels ? {
+                presentStatus: { $arrayElemAt: ["$trackingEvents", -1] },
+            } : {}))
+        }
+    ]);
     if (!getSenderParcels) {
         throw new AppError_1.AppError(http_status_codes_1.StatusCodes.NOT_FOUND, "No parcel found");
     }

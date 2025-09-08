@@ -22,6 +22,7 @@ const getEnvs = () => {
         MONGO_URI: process.env.MONGO_URI,
         NODE_ENV: process.env.NODE_ENV,
         PORT: process.env.PORT,
+        FRONTEND_URL: process.env.FRONTEND_URL,
         ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET,
         ACCESS_TOKEN_EXPIRY: process.env.ACCESS_TOKEN_EXPIRY,
         REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,
