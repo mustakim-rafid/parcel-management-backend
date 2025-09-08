@@ -45,7 +45,7 @@ const getReceiverByEmail = async (email: string) => {
 }
 
 const getAllUsers = async () => {
-    const users = await User.find({})
+    const users = await User.find({}, { password: 0 })
 
     return users
 }
