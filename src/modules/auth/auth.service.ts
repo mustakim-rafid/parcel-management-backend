@@ -17,6 +17,14 @@ const login = async (payload: ILogin) => {
         throw new AppError(StatusCodes.NOT_FOUND, "No user found")
     }
 
+    if (isUserExists.isBlocked) {
+        throw new AppError(StatusCodes.NOT_FOUND, "User is blocked")
+    }
+
+    if (!isUserExists.isVerified) {
+        throw new AppError(StatusCodes.NOT_FOUND, "User is not verified, verify first!")
+    }
+
     const isPasswordCorrect = await bcryptjs.compare(password, isUserExists.password)
 
     if (!isPasswordCorrect) {

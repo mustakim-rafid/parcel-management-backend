@@ -33,7 +33,7 @@ const checkAuth = (roles) => (req, res, next) => __awaiter(void 0, void 0, void 
             throw new AppError_1.AppError(http_status_codes_1.StatusCodes.NOT_ACCEPTABLE, "User is not verified");
         }
         if (user.isBlocked) {
-            throw new AppError_1.AppError(http_status_codes_1.StatusCodes.NOT_FOUND, "User not found");
+            throw new AppError_1.AppError(http_status_codes_1.StatusCodes.NOT_FOUND, "User is blocked");
         }
         req.user = decodedToken;
         next();

@@ -25,7 +25,7 @@ export const checkAuth = (roles: Role[]) => async (req: Request, res: Response, 
             throw new AppError(StatusCodes.NOT_ACCEPTABLE, "User is not verified")
         }
         if (user.isBlocked) {
-            throw new AppError(StatusCodes.NOT_FOUND, "User not found")
+            throw new AppError(StatusCodes.NOT_FOUND, "User is blocked")
         }
 
         req.user = decodedToken as JwtPayload

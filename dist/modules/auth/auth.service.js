@@ -37,6 +37,12 @@ const login = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     if (!isUserExists) {
         throw new AppError_1.AppError(http_status_codes_1.StatusCodes.NOT_FOUND, "No user found");
     }
+    if (isUserExists.isBlocked) {
+        throw new AppError_1.AppError(http_status_codes_1.StatusCodes.NOT_FOUND, "User is blocked");
+    }
+    if (!isUserExists.isVerified) {
+        throw new AppError_1.AppError(http_status_codes_1.StatusCodes.NOT_FOUND, "User is not verified, verify first!");
+    }
     const isPasswordCorrect = yield bcryptjs_1.default.compare(password, isUserExists.password);
     if (!isPasswordCorrect) {
         throw new AppError_1.AppError(http_status_codes_1.StatusCodes.NOT_ACCEPTABLE, "Password is incorrect");
